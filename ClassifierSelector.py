@@ -6,7 +6,7 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 import ClassifierSelector as classifierSelector
 from sklearn.grid_search import GridSearchCV
-
+from sklearn.linear_model import SGDClassifier
 
 
 def trainSVC(xTrain,yTrain):
@@ -18,7 +18,6 @@ def trainSVC(xTrain,yTrain):
     # n_neighbors = np.arange(1, 10,2)
     # classifier = GridSearchCV(classifier, param_grid={'n_neighbors': n_neighbors}, cv=5)
 
-    print("Training...")
     classifier.fit(xTrain, yTrain)
 
     # print("Best choice is: {}".format(classifier.best_params_))
@@ -34,7 +33,6 @@ def trainKNeighbors(xTrain, yTrain):
     # n_neighbors = np.arange(1, 10,2)
     # classifier = GridSearchCV(classifier, param_grid={'n_neighbors': n_neighbors}, cv=5)
 
-    print("Training...")
     classifier.fit(xTrain, yTrain)
 
     # print("Best choice is: {}".format(classifier.best_params_))
@@ -52,7 +50,23 @@ def trainLogisticRegression(xTrain, yTrain):
     # n_neighbors = np.arange(1, 10,2)
     # classifier = GridSearchCV(classifier, param_grid={'n_neighbors': n_neighbors}, cv=5)
 
-    print("Training...")
+    classifier.fit(xTrain, yTrain)
+
+    # print("Best choice is: {}".format(classifier.best_params_))
+
+
+    return classifier
+
+def trainSGDClassifier(xTrain, yTrain):
+    classifier = SGDClassifier()
+    # classifier = SVC()
+
+    # FOR 10 000 -> 9 neighbors
+    # print("Tuning parameter for training...")
+    # tuning the hyper-parameters
+    # n_neighbors = np.arange(1, 10,2)
+    # classifier = GridSearchCV(classifier, param_grid={'n_neighbors': n_neighbors}, cv=5)
+
     classifier.fit(xTrain, yTrain)
 
     # print("Best choice is: {}".format(classifier.best_params_))
@@ -80,9 +94,15 @@ def trainRandomForest(xTrain, yTrain):
     return rf
 
 
-def getClassifier(xTrain,yTrain):
-      # classifier = trainKNeighbors(xTrain, yTrain)
-    # classifier = trainSVC(xTrain, yTrain)
+def trainClassifier(xTrain,yTrain):
+
+    print "Training classifier..."
+
+    # classifier = trainKNeighbors(xTrain, yTrain)
+    # classifier = trainSGDClassifier(xTrain, yTrain)
+    # classifier  = trainSVC(xTrain,yTrain)
     classifier = trainRandomForest(xTrain,yTrain)
+    # classifier = trainLogisticRegression(xTrain,yTrain)
+
 
     return classifier

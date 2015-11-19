@@ -4,12 +4,11 @@ from sklearn.feature_extraction import DictVectorizer as DV
 import DataReader as dataReader
 
 
-def convertTargetFeatureToNumeric(trainData, testData):
+def convertTargetFeatureToNumeric(data):
     categoryDictionary = dataReader.getCategoryDictionaries()
-    trainData = trainData.replace(categoryDictionary.keys(), range(len(categoryDictionary.keys())))
-    testData = testData.replace(categoryDictionary.keys(), range(len(categoryDictionary.keys())))
+    data = data.replace(categoryDictionary.keys(), range(len(categoryDictionary.keys())))
 
-    return trainData, testData
+    return data
 
 
 def handleNumericFeaturesForOHE(trainData, testData):

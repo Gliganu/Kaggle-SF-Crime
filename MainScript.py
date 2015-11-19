@@ -5,32 +5,53 @@ import DataReader as dataReader
 import OHEFeatureExtractor as oheFeatExtr
 import RegularFeatureExtractor as regularFeatExtr
 import Validator as validator
+import Utils as utils
+
+def trainClassifierOnTrainingData(numberOfTrainingExamples):
+
+    trainData = dataReader.getTrainData(numberOfTrainingExamples)
+
+    # feature engineering
+    trainData =  regularFeatExtr.convertTargetFeatureToNumeric(trainData)
+    xTrain, yTrain = regularFeatExtr.getRegularFeatures(trainData, True)
+
+
+     # classifier training
+    classifier = classifierSelector.trainClassifier(xTrain, yTrain)
+
+    return classifier
+
+def constructTestData(testData):
+
+    testData =  regularFeatExtr.convertTargetFeatureToNumeric(testData)
+    xTest, yTest = regularFeatExtr.getRegularFeatures(testData, False)
+
+    return xTest,yTest
+
 
 
 def predict():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    # trainData, testData = dataReader.getTargetAndTrainData()
-    trainData, testData = dataReader.getTargetAndTrainDataWithLabels(100,100)
+    classifier = trainClassifierOnTrainingData(10000)
 
-    # feature engineering
-    trainData, testData = oheFeatExtr.convertTargetFeatureToNumeric(trainData, testData)
+    print "Beginning to load test data..."
 
-    # xTrain, yTrain, xTest, yTest = oheFeatExtr.getOHEFeatures(trainData, testData)
-    xTrain, yTrain, xTest, yTest = regularFeatExtr.getRegularFeatures(trainData, testData)
+    # partitionNumber = utils.numberOfPartitions
+    for index in range(3):
 
-    print "Finished vectorizing after: {}".format(time.time() - startTime)
+        # miniTestData = dataReader.getSerializedMiniTestData(index)
+        miniTestData = dataReader.getRandomMiniTestData()
 
-    # train model
-    classifier = classifierSelector.getClassifier(xTrain, yTrain)
+        xTest,yTest = constructTestData(miniTestData)
 
-    print("Predicting...")
-    yPred = classifier.predict_log_proba(xTest)
+        print "Predicting..."
+        yPred = classifier.predict(xTest)
 
-    # validator.performValidation(yPred, yTest)
-    #
-    dataReader.writePredToCsv(yPred)
+        validator.performValidation(yPred, yTest)
+
+        # dataReader.writePredToCsv(yPred,index)
 
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 

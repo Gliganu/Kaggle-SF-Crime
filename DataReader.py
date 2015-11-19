@@ -3,7 +3,8 @@ import numpy as np
 from sklearn.externals import joblib
 import os
 import time
-
+import random
+import Utils as utils
 
 def getTrainAndTestData(numberOfTrainEx):
     print("Reading data...")
@@ -30,7 +31,6 @@ def getWholeTrainingData():
 
 
 def getWholeTestData():
-    # inputFileName = 'C:\Users\GligaBogdan\Desktop\Machine Learning\Kaggle\SF Crime\\sampleSubmission.csv'
     inputFileName = 'data\\test.csv'
 
     data = pd.read_csv(inputFileName, quotechar='"', skipinitialspace=True)
@@ -38,10 +38,23 @@ def getWholeTestData():
     return data
 
 
-def writeToCsv(data):
+def writeToCsv(data,):
     outputFileName = 'data\\out.csv'
 
     data.to_csv(outputFileName)
+
+def getSerializedMiniTestData(index):
+    inputFileName = 'data\\miniTestData\\miniDataFrame'+str(index)+'.csv'
+
+    print "\n Mini test batch:"+str(index)
+    return pd.read_csv(inputFileName, quotechar='"', skipinitialspace=True)
+
+def getRandomMiniTestData():
+
+    randomIndex = random.randint(0,utils.numberOfPartitions)
+
+    return getSerializedMiniTestData(randomIndex)
+
 
 
 def getCategoryDictionaries():
@@ -59,7 +72,7 @@ def getCategoryDictionaries():
     return categToIndexDictionary
 
 
-def writePredToCsv(yPred):
+def writePredToCsv(yPred,miniTestDataIndex):
     print("Writing to csv...")
 
     categToIndexDictionary = getCategoryDictionaries()
@@ -69,20 +82,22 @@ def writePredToCsv(yPred):
 
     resultMatrix = np.zeros((numberOfEntries, numberOfColumns))
 
-    for index, probabilities in enumerate(yPred):
-        resultMatrix[index,:] = probabilities
+    for index, predictionColumnIndex in enumerate(yPred):
+        resultMatrix[index,predictionColumnIndex] = 1
 
     data = pd.DataFrame(resultMatrix, range(numberOfEntries), columns=categToIndexDictionary.keys())
 
     outputFileName = 'data\\out.csv'
-
-    os.remove(outputFileName)
-    data.to_csv(outputFileName)
+    if miniTestDataIndex == 0:
+        os.remove(outputFileName)
+        data.to_csv(outputFileName)
+    else:
+        with open(outputFileName, 'a') as f:
+            data.to_csv(f, header=False)
 
 
 def constructSerializedTrainingDataFrame():
     print("Reading......")
-    # dataTrain,_ = getTrainAndTestData(10)
     dataTrain = getWholeTrainingData()
 
     print("Outputting.....")
@@ -92,7 +107,6 @@ def constructSerializedTrainingDataFrame():
 
 def constructSerializedTestDataFrame():
     print("Reading......")
-    # dataTrain,_ = getTrainAndTestData(10)
     dataTest = getWholeTestData()
 
     print("Outputting.....")
@@ -101,7 +115,6 @@ def constructSerializedTestDataFrame():
 
 
 def getSerializedTrainingData():
-    print("Getting training data...")
     inputFileName = "data\\frames\\trainingDataFrame.pkl"
     dataRead = joblib.load(inputFileName)
 
@@ -117,39 +130,30 @@ def getSerializedTestData():
     return dataRead
 
 
-def getTargetAndTrainData(trainDataSize = -1, testDataSize = -1):
+
+def getTrainData(trainDataSize = -1):
+
+    print("Getting training data: "+str(trainDataSize))
 
     trainData = getSerializedTrainingData()
-    testData = getSerializedTestData()
 
     if trainDataSize != -1:
         trainData = trainData.sample(trainDataSize)
 
-    if testDataSize != -1:
-        testData = testData.sample(testDataSize)
-
-
     print "TrainData size is: {}".format(trainData.shape)
-    print "TestData size is: {}".format(testData.shape)
 
-    return trainData, testData
+    return trainData
 
+def getTestData(testDataSize = -1, withLabels = True):
 
-def getTargetAndTrainDataWithLabels(trainDataSize = -1, testDataSize = -1):
-
-    trainData = getSerializedTrainingData()
-    testData = getSerializedTrainingData()
-
-    if trainDataSize != -1:
-        trainData = trainData.sample(trainDataSize)
+    if withLabels:
+        testData = getSerializedTrainingData()
+    else:
+        testData = getSerializedTestData()
 
     if testDataSize != -1:
         testData = testData.sample(testDataSize)
 
-
-    #df_rest = df.loc[~df.index.isin(df_0.7.index)] // ia tot ce nu ii in aialalta ( to split it ) si la aia iii dai df_0.7 = df.sample(frac=0.7)
-
-    print "TrainData size is: {}".format(trainData.shape)
     print "TestData size is: {}".format(testData.shape)
 
-    return trainData, testData
+    return testData

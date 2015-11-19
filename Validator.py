@@ -8,7 +8,6 @@ def performValidation(yPred, yTest):
 
     print(metrics.classification_report(yPred, yTest, target_names=dictionary.keys()))
 
-    accuracy = np.sum(yPred == yTest) * 1. / len(yTest)
     print ("Accuracy:", accuracy_score(yPred,yTest))
 
     #todo show the confusion matrix here ( take from Olivier Grisel)

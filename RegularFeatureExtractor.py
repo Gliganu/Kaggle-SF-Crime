@@ -1,7 +1,8 @@
 import time
 import numpy as np
+import DataReader as dataReader
 
-def replaceDiscreteFeaturesWithNumericalOnes(trainData, testData):
+def replaceDiscreteFeaturesWithNumericalOnes(data):
     discreteColumns = ['DayOfWeek', 'PdDistrict']
 
     for column in discreteColumns:
@@ -9,72 +10,76 @@ def replaceDiscreteFeaturesWithNumericalOnes(trainData, testData):
         entryDictionary = {}
         id = 1
 
-        for index, entry in enumerate(trainData.get(column)):
+        for index, entry in enumerate(data.get(column)):
 
             if entry not in entryDictionary:
                 entryDictionary[entry] = id
                 id += 1
 
-            trainData.get(column).values[index] = entryDictionary.get(entry)
+            data.get(column).values[index] = entryDictionary.get(entry)
 
 
-        for index, entry in enumerate(testData.get(column)):
-
-            if entry not in entryDictionary:
-                entryDictionary[entry] = id
-                id += 1
-
-            testData.get(column).values[index] = entryDictionary.get(entry)
+    return data
 
 
-
-    return trainData, testData
-
-
-def performRegularFeatureEngineering(trainData, testData):
+def performRegularFeatureEngineering(data, isTrainData):
     print("Performing feature engineering...")
 
-    # drop certain columns
-    trainData = trainData.drop(['Descript', 'Address', 'Resolution'],
-                               1)  # descript must be droped because there is no descript in test
 
+    # trainData
+    if isTrainData:
+        data = data.drop(['Descript', 'Address', 'Resolution'], 1)
 
-    # depends if out testData is actually training data
-    if 'Id' in testData.columns.values:
-        testData = testData.drop(['Address', 'Id'], 1)
+    # testData
     else:
-        testData = testData.drop(['Address','Descript','Resolution'], 1)
-
-    # get only the year from date
-    trainData.Dates = [date.split("-")[0] for date in trainData.Dates]
-    testData.Dates = [date.split("-")[0] for date in testData.Dates]
-
-    trainData, testData = replaceDiscreteFeaturesWithNumericalOnes(trainData, testData)
-
-    return trainData, testData
+          # depends if out testData is actually training data
+        if 'Id' in data.columns.values:
+            data = data.drop(['Address', 'Id'], 1)
+        else:
+            data = data.drop(['Address','Descript','Resolution'], 1)
 
 
-def getRegularFeatures(trainData, testData):
-    startTime = time.time()
+    # get only the year from date ( trainData & testData)
+    data.Dates = [date.split("-")[0] for date in data.Dates]
 
-    trainData, testData = performRegularFeatureEngineering(trainData, testData)
 
-    print "Finished feature engineering after: {}".format(time.time() - startTime)
+    # map using integer dictionary ( trainData & testData)
+    data = replaceDiscreteFeaturesWithNumericalOnes(data)
+
+    return data
+
+def convertTargetFeatureToNumeric(data):
+    categoryDictionary = dataReader.getCategoryDictionaries()
+    data = data.replace(categoryDictionary.keys(), range(len(categoryDictionary.keys())))
+
+    return data
+
+
+
+def getRegularFeatures(data, isTrainData):
+
+    data = performRegularFeatureEngineering(data, isTrainData)
 
     # splitting data into X and Y
-    yTrain = trainData.Category
-    trainData = trainData.drop(['Category'], 1)
-    xTrain = trainData.values
+    # trainData
+    if isTrainData:
+        yData =  data.Category
+        data = data.drop(['Category'], 1)
+        xData = data.values
 
-    try:
-        yTest = testData.Category
-        testData = testData.drop(['Category'], 1)
-    except AttributeError:
-        yTest = []
+        # print("Train data features: {}".format(data.columns.values))
 
-    xTest = testData.values
+    #testData
+    else:
+        try:
+            yData = data.Category
+            data = data.drop(['Category'], 1)
+        except AttributeError:
+            yData = []
 
-    print("Train data features: {}".format(trainData.columns.values))
-    print("Test data features: {}".format(testData.columns.values))
+        xData = data.values
 
-    return xTrain, yTrain, xTest, yTest
+        # print("Test data features: {}".format(data.columns.values))
+
+
+    return xData,yData
