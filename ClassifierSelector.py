@@ -10,7 +10,7 @@ from sklearn.linear_model import SGDClassifier
 
 
 def trainSVC(xTrain,yTrain):
-    classifier = SVC()
+    classifier = SVC(probability=True)
 
     # FOR 10 000 -> 9 neighbors
     # print("Tuning parameter for training...")
@@ -100,8 +100,8 @@ def trainClassifier(xTrain,yTrain):
 
     # classifier = trainKNeighbors(xTrain, yTrain)
     # classifier = trainSGDClassifier(xTrain, yTrain)
-    # classifier  = trainSVC(xTrain,yTrain)
-    classifier = trainRandomForest(xTrain,yTrain)
+    classifier  = trainSVC(xTrain,yTrain)
+    # classifier = trainRandomForest(xTrain,yTrain)
     # classifier = trainLogisticRegression(xTrain,yTrain)
 
 

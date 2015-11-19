@@ -36,6 +36,13 @@ def getWholeTestData():
 
     return data
 
+def getSuffixDataFrame():
+    inputFileName = 'data\\suffixDataFrameForTesting.csv'
+
+    data = pd.read_csv(inputFileName, quotechar='"', skipinitialspace=True)
+
+    return data
+
 
 def writeToCsv(data,):
     outputFileName = 'data\\out.csv'
@@ -81,8 +88,8 @@ def writePredToCsv(yPred,miniTestDataIndex):
 
     resultMatrix = np.zeros((numberOfEntries, numberOfColumns))
 
-    for index, predictionColumnIndex in enumerate(yPred):
-        resultMatrix[index,predictionColumnIndex] = 1
+    for index, predictions in enumerate(yPred):
+        resultMatrix[index,:] = predictions[1]
 
     data = pd.DataFrame(resultMatrix, range(numberOfEntries), columns=categToIndexDictionary.keys())
 

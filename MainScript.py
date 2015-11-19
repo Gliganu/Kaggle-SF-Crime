@@ -57,25 +57,27 @@ def predictForValidation():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSize = 100
-    miniBatchDataSize = 100
+    trainDataSize = 5000
+    miniBatchDataSize = 1000
 
     classifier = trainClassifierOnTrainingData(trainDataSize)
 
 
     print "Beginning to load test data..."
 
-    for index in range(3):
+    for index in range(1):
 
         mockTrainData = dataReader.getTrainData(miniBatchDataSize)
+
+        mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
 
         xTest,yTest = constructTestData(mockTrainData)
 
         yPred = classifier.predict(xTest)
 
-        validator.performValidation(yPred, yTest)
+        # validator.performValidation(yPred, yTest)
 
-        # dataReader.writePredToCsv(yPred,index)
+        dataReader.writePredToCsv(yPred,index)
 
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
