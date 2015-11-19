@@ -28,5 +28,4 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 data/
-*.xml
-*.iml
+.idea/

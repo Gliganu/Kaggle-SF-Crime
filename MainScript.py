@@ -7,6 +7,31 @@ import RegularFeatureExtractor as regularFeatExtr
 import Validator as validator
 import Utils as utils
 
+def predictForSubmission():
+    startTime = time.time()
+    allAlgorithmStartTime = startTime
+
+    classifier = trainClassifierOnTrainingData(50000)
+
+    print "Beginning to load test data..."
+
+    partitionNumber = utils.numberOfPartitions
+    for index in range(partitionNumber):
+
+        miniTestData = dataReader.getSerializedMiniTestData(index)
+
+        xTest,yTest = constructTestData(miniTestData)
+
+        print "Predicting..."
+        yPred = classifier.predict(xTest)
+
+        dataReader.writePredToCsv(yPred,index)
+
+    print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
+
+
+
+
 def trainClassifierOnTrainingData(numberOfTrainingExamples):
 
     trainData = dataReader.getTrainData(numberOfTrainingExamples)
@@ -28,25 +53,24 @@ def constructTestData(testData):
 
     return xTest,yTest
 
-
-
-def predict():
+def predictForValidation():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    classifier = trainClassifierOnTrainingData(10000)
+    trainDataSize = 100
+    miniBatchDataSize = 100
+
+    classifier = trainClassifierOnTrainingData(trainDataSize)
+
 
     print "Beginning to load test data..."
 
-    # partitionNumber = utils.numberOfPartitions
     for index in range(3):
 
-        # miniTestData = dataReader.getSerializedMiniTestData(index)
-        miniTestData = dataReader.getRandomMiniTestData()
+        mockTrainData = dataReader.getTrainData(miniBatchDataSize)
 
-        xTest,yTest = constructTestData(miniTestData)
+        xTest,yTest = constructTestData(mockTrainData)
 
-        print "Predicting..."
         yPred = classifier.predict(xTest)
 
         validator.performValidation(yPred, yTest)
@@ -56,7 +80,7 @@ def predict():
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
 
-predict()
+predictForValidation()
 
 
 
