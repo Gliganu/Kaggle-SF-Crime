@@ -31,3 +31,4 @@ data/
 .idea/
 %HOMEDRIVE%%HOMEPATH%
 .ipynb_checkpoints
+*.pyc
