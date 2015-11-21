@@ -11,7 +11,7 @@ def predictForSubmission():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    classifier = trainClassifierOnTrainingData(50000)
+    classifier = trainClassifierOnTrainingData(25000)
 
     print "Beginning to load test data..."
 
@@ -23,7 +23,7 @@ def predictForSubmission():
         xTest,yTest = constructTestData(miniTestData)
 
         print "Predicting..."
-        yPred = classifier.predict(xTest)
+        yPred = classifier.predict_proba(xTest)
 
         dataReader.writePredToCsv(yPred,index)
 
@@ -82,8 +82,8 @@ def predictForValidation():
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
 
-predictForValidation()
-
+# predictForValidation()
+predictForSubmission()
 
 
 
