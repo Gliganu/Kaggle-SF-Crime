@@ -1,6 +1,7 @@
 import time
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
@@ -9,10 +10,11 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import SGDClassifier
 from sklearn.svm import LinearSVC
 
-def trainSVC(xTrain,yTrain):
-    classifier = SVC(probability=True)
+def trainSVC(xTrain,yTrain,probability):
+    classifier = SVC(probability=probability, kernel='linear', cache_size=5000)
     #todo Olivier: gamma = 0.001 , C = 100
      #todo change cache? no_of_jobs?
+# 'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'
 
 
     # FOR 10 000 -> 9 neighbors
@@ -55,21 +57,36 @@ def trainSGDClassifier(xTrain, yTrain):
     return classifier
 
 
+def trainGradientBoostingClassifier(xTrain, yTrain):
+    classifier = GradientBoostingClassifier(max_features=0.5,learning_rate=0.05,max_depth=3)
+
+    # params = {
+    #     'learning_rate':[0.05,0.1,0.5],
+    #     'max_features':[0.5,1],
+    #     'max_depth':[3,4,5],
+    # }
+    #
+    # classifier = GridSearchCV(classifier,params,cv=5,n_jobs=-1)
+
+    # 5000/3000 => {'max_features': 0.5, 'learning_rate': 0.05, 'max_depth': 3}
+
+    #todo change cache? no_of_jobs?
+    classifier.fit(xTrain, yTrain)
+
+    # print classifier.best_params_
+
+    return classifier
+
+
+
 def trainRandomForest(xTrain, yTrain):
 
-    rf = RandomForestClassifier(90) # best classif on 10 000
+    # 10000/3000 =>  {'n_estimators': 90 'max_features': 0.8, 'max_depth': 9}
+    classifier = RandomForestClassifier(n_estimators=90,max_features=0.8, max_depth=9, n_jobs=-1)
 
-    # n_trees = range(50, 150, 20)
-    # rf = GridSearchCV(estimator=rf, param_grid={'n_estimators': n_trees}, cv=5)
+    classifier.fit(xTrain, yTrain)
 
-    print("Training...")
-    startTime = time.time()
-
-    rf.fit(xTrain, yTrain)
-
-    print("Training took: {}".format(time.time() - startTime))
-    # print("Best parameters: {}".format(rf.best_params_))
-    return rf
+    return classifier
 
 
 def trainClassifier(xTrain,yTrain):
@@ -78,9 +95,10 @@ def trainClassifier(xTrain,yTrain):
 
     # classifier = trainKNeighbors(xTrain, yTrain)
     # classifier = trainSGDClassifier(xTrain, yTrain)
-    classifier  = trainSVC(xTrain,yTrain)
-    # classifier = trainRandomForest(xTrain,yTrain)
+    # classifier  = trainSVC(xTrain,yTrain,False)
+    classifier = trainRandomForest(xTrain,yTrain)
     # classifier = trainLogisticRegression(xTrain,yTrain)
+    # classifier = trainGradientBoostingClassifier(xTrain,yTrain)
 
 
     return classifier
