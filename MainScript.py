@@ -10,8 +10,6 @@ def predictForSubmission():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    numberOfTrainingExamples = 25000
-
     classifier = trainClassifierOnTrainingData()
 
     print "Beginning to load test data..."
@@ -28,7 +26,7 @@ def predictForSubmission():
 
         dataReader.writePredToCsv(yPred,index)
 
-
+    print "Post processing..."
     dataReader.postProcessCsv()
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
@@ -87,7 +85,7 @@ def predictForValidation():
 
 # if __name__ == '__main__':
 #     predictForValidation()
-#     # predictForSubmission()
+    # predictForSubmission()
 #
 #
 
