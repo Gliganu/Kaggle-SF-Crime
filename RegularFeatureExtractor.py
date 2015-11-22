@@ -22,6 +22,18 @@ def replaceDiscreteFeaturesWithNumericalOnes(data):
     return data
 
 
+def performDateFeatureEngineering(data):
+
+    # Add Year,Month,Day Columns
+    data['Year'] = data['Dates'].map(lambda entryDate: entryDate.split("-")[0] )
+    data['Month'] = data['Dates'].map(lambda entryDate: entryDate.split("-")[1] )
+    data['Day'] = data['Dates'].map(lambda entryDate: entryDate.split("-")[2].split(" ")[0] )
+
+    # Delete old "Dates" column
+    data = data.drop('Dates',1)
+
+    return data
+
 def performRegularFeatureEngineering(data, isTrainData):
     print("Performing feature engineering...")
 
@@ -38,10 +50,9 @@ def performRegularFeatureEngineering(data, isTrainData):
         else:
             data = data.drop(['Address','Descript','Resolution'], 1)
 
-
-    # get only the year from date ( trainData & testData)
-    data.Dates = [date.split("-")[0] for date in data.Dates]
-
+    # ( trainData & testData)
+    data = performDateFeatureEngineering(data)
+    # data.Dates = [date.split("-")[0] for date in data.Dates]
 
     # map using integer dictionary ( trainData & testData)
     data = replaceDiscreteFeaturesWithNumericalOnes(data)
@@ -81,5 +92,5 @@ def getRegularFeatures(data, isTrainData):
 
         # print("Test data features: {}".format(data.columns.values))
 
-
+    print "Features used {}".format(data.columns.values)
     return xData,yData

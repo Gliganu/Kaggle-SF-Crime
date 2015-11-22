@@ -4,6 +4,7 @@ from sklearn.externals import joblib
 import os
 import random
 import Utils as utils
+import RegularFeatureExtractor as featureExtractor
 
 def getTrainAndTestData(numberOfTrainEx):
     print("Reading data...")
@@ -163,3 +164,28 @@ def getTestData(testDataSize = -1, withLabels = True):
     print "TestData size is: {}".format(testData.shape)
 
     return testData
+
+
+def postProcessCsv():
+    # this is needed to add remove old mini-batch-id and add global id
+    outputFileName = "data\\out.csv"
+
+    data = pd.read_csv(outputFileName, quotechar='"', skipinitialspace=True)
+    data = data.drop(data.columns[0],1)
+
+    # removing the bad indexed version
+    os.remove(outputFileName)
+
+    data.to_csv(outputFileName,index_label="Id")
+
+
+
+def test():
+    data = getSerializedMiniTestData(5)
+    data = featureExtractor.performDateFeatureEngineering(data)
+
+    a = 1
+
+test()
+
+

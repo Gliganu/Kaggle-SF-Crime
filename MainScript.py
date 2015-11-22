@@ -2,7 +2,6 @@ import time
 
 import ClassifierSelector as classifierSelector
 import DataReader as dataReader
-import OHEFeatureExtractor as oheFeatExtr
 import RegularFeatureExtractor as regularFeatExtr
 import Validator as validator
 import Utils as utils
@@ -29,6 +28,8 @@ def predictForSubmission():
 
         dataReader.writePredToCsv(yPred,index)
 
+
+    dataReader.postProcessCsv()
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
 
@@ -59,10 +60,10 @@ def predictForValidation():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSize = 300000
+    trainDataSize = 100000
     miniBatchDataSize = 3000
 
-    classifier = trainClassifierOnTrainingData()
+    classifier = trainClassifierOnTrainingData(trainDataSize)
 
 
     print "Beginning to load test data..."
@@ -84,11 +85,11 @@ def predictForValidation():
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
 
-if __name__ == '__main__':
-    # predictForValidation()
-    predictForSubmission()
-
-
+# if __name__ == '__main__':
+#     predictForValidation()
+#     # predictForSubmission()
+#
+#
 
 
 

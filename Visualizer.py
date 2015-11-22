@@ -4,20 +4,23 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
 import DataReader as dataReader
-import OHEFeatureExtractor as oheFeatExtr
 import RegularFeatureExtractor as regularFeatExtr
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
 import Validator as validator
 import ClassifierSelector as classifierSelector
+import MainScript as mainScript
+import Utils as utils
+from sklearn.metrics import accuracy_score,recall_score,precision_score,f1_score
+import numpy as np
 
 import time
 import matplotlib.pyplot as plt
 
 def showTrainAndTestErrorPlot(yTrainValues,yTestValues,trainDataSize):
 
-    plt.plot(trainDataSize, yTrainValues )
-    plt.plot(trainDataSize, yTestValues)
+    plt.plot(trainDataSize, yTrainValues,'o-' )
+    plt.plot(trainDataSize, yTestValues,'x-')
 
     plt.xlabel('Number of training examples')
     plt.ylabel('Error')
@@ -30,33 +33,37 @@ def testDataOverTime():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSizes = range(100000,200000,20000)
+    # trainDataSize = 100000
+    testDataSize = 3000
 
-    yTestValues =[]
+
+    yTestValues = []
     yTrainValues = []
 
-    initialTrainData, initialTestData = dataReader.getTargetAndTrainDataWithLabels(250000)
+    trainDataSizes = np.linspace(100000,200000,4,dtype=int)
 
     for trainDataSize in trainDataSizes:
-        print "Train data size is {}".format(trainDataSize)
 
-        trainData = initialTrainData.sample(trainDataSize)
-        testData = initialTestData.sample(1000)
+        print("Currently at {}".format(trainDataSize))
 
-        trainData, testData = oheFeatExtr.convertTargetFeatureToNumeric(trainData, testData)
+        classifier,xTrain,yTrain = utils.trainClassifierOnTrainingDataReturnAll(trainDataSize)
 
-        xTrain, yTrain, xTest, yTest = regularFeatExtr.getRegularFeatures(trainData, testData)
+        # Cut the data on which the predicition will be made to be the same lenght as test
+        xTrain = xTrain[0:testDataSize]
+        yTrain = yTrain[0:testDataSize]
 
-        print "Finished vectorizing after: {}".format(time.time() - startTime)
+        mockTrainData = dataReader.getTrainData(testDataSize)
 
-        classifier = classifierSelector.trainRandomForest(xTrain, yTrain)
+        mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
+
+        xTest,yTest = mainScript.constructTestData(mockTrainData)
 
         print("Predicting...")
         yTestPred = classifier.predict(xTest)
         yTrainPred = classifier.predict(xTrain)
 
-        yTestAccuracy = np.sum(yTestPred == yTest) * 1. / len(yTest)
-        yTrainAccuracy = np.sum(yTrainPred == yTrain) * 1. / len(yTrain)
+        yTestAccuracy =  accuracy_score(yTestPred,yTest)
+        yTrainAccuracy = accuracy_score(yTrainPred,yTrain)
 
         yTestValues.append(yTestAccuracy)
         yTrainValues.append(yTrainAccuracy)
@@ -65,8 +72,10 @@ def testDataOverTime():
     showTrainAndTestErrorPlot(yTestValues, yTrainValues,trainDataSizes)
 
 
-    # outputResult(yPred)
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
+#
 
+# if __name__ == '__main__':
+#     testDataOverTime()
+#
 
-testDataOverTime()
