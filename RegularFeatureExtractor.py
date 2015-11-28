@@ -54,6 +54,9 @@ def performRegularFeatureEngineering(data, isTrainData):
     # ( trainData & testData)
     data = performDateFeatureEngineering(data)
 
+    #drop Geo
+    data = data.drop(['X', 'Y'], 1)
+
     # map using integer dictionary ( trainData & testData)
     data = replaceDiscreteFeaturesWithNumericalOnes(data)
 

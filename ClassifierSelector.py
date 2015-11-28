@@ -9,6 +9,7 @@ import ClassifierSelector as classifierSelector
 from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import SGDClassifier
 from sklearn.svm import LinearSVC
+import numpy as np
 
 def trainSVC(xTrain,yTrain,probability):
     classifier = SVC(probability=probability, kernel='linear', cache_size=5000)
@@ -69,7 +70,8 @@ def trainRandomForest(xTrain, yTrain):
 
 def trainGradientBoostingClassifier(xTrain, yTrain):
 
-    classifier = GradientBoostingClassifier(n_estimators=90,max_features=0.8, max_depth=9)
+    # n_estimators=80, max_depth= 7 !! These were the lowest params from test in GridSearch. Check if lower is possible!
+    classifier = GradientBoostingClassifier(n_estimators=80, max_depth= 7)
 
     classifier.fit(xTrain, yTrain)
 

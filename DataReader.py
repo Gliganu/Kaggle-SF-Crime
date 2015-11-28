@@ -96,7 +96,10 @@ def writePredToCsv(yPred,miniTestDataIndex):
 
     outputFileName = 'data\\out.csv'
     if miniTestDataIndex == 0:
-        os.remove(outputFileName)
+
+        if os.path.isfile(outputFileName):
+            os.remove(outputFileName)
+
         data.to_csv(outputFileName)
     else:
         with open(outputFileName, 'a') as f:

@@ -67,7 +67,9 @@ def createEnsembleResult():
     print "Outputting..."
     outputFileName = "data\\ensemble\\ensemble.csv"
 
-    os.remove(outputFileName)
+    if os.path.isfile(outputFileName):
+        os.remove(outputFileName)
+
     ensembleDataFrame.to_csv(outputFileName,index_label="Id")
 
     return ensembleDataFrame
