@@ -57,32 +57,19 @@ def trainSGDClassifier(xTrain, yTrain):
     return classifier
 
 
-def trainGradientBoostingClassifier(xTrain, yTrain):
-    classifier = GradientBoostingClassifier(max_features=0.5,learning_rate=0.05,max_depth=3)
-
-    # params = {
-    #     'learning_rate':[0.05,0.1,0.5],
-    #     'max_features':[0.5,1],
-    #     'max_depth':[3,4,5],
-    # }
-    #
-    # classifier = GridSearchCV(classifier,params,cv=5,n_jobs=-1)
-
-    # 5000/3000 => {'max_features': 0.5, 'learning_rate': 0.05, 'max_depth': 3}
-
-    #todo change cache? no_of_jobs?
-    classifier.fit(xTrain, yTrain)
-
-    # print classifier.best_params_
-
-    return classifier
-
-
 
 def trainRandomForest(xTrain, yTrain):
 
     # 10000/3000 =>  {'n_estimators': 90 'max_features': 0.8, 'max_depth': 9}
     classifier = RandomForestClassifier(n_estimators=90,max_features=0.8, max_depth=9, n_jobs=-1)
+
+    classifier.fit(xTrain, yTrain)
+
+    return classifier
+
+def trainGradientBoostingClassifier(xTrain, yTrain):
+
+    classifier = GradientBoostingClassifier(n_estimators=90,max_features=0.8, max_depth=9)
 
     classifier.fit(xTrain, yTrain)
 
@@ -96,7 +83,8 @@ def trainClassifier(xTrain,yTrain):
     # classifier = trainKNeighbors(xTrain, yTrain)
     # classifier = trainSGDClassifier(xTrain, yTrain)
     # classifier  = trainSVC(xTrain,yTrain,False)
-    classifier = trainRandomForest(xTrain,yTrain)
+    # classifier = trainRandomForest(xTrain,yTrain)
+    classifier = trainGradientBoostingClassifier(xTrain,yTrain)
     # classifier = trainLogisticRegression(xTrain,yTrain)
     # classifier = trainGradientBoostingClassifier(xTrain,yTrain)
 

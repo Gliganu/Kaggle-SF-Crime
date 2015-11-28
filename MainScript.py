@@ -10,6 +10,8 @@ def predictForSubmission():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
+    numberOfTrainingExamples = 25000
+
     classifier = trainClassifierOnTrainingData()
 
     print "Beginning to load test data..."
@@ -58,8 +60,8 @@ def predictForValidation():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSize = 100000
-    miniBatchDataSize = 3000
+    trainDataSize = 200000
+    miniBatchDataSize = 5000
 
     classifier = trainClassifierOnTrainingData(trainDataSize)
 
@@ -83,8 +85,8 @@ def predictForValidation():
     print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
 
 
-# if __name__ == '__main__':
-#     predictForValidation()
+if __name__ == '__main__':
+    predictForValidation()
     # predictForSubmission()
 #
 #

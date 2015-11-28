@@ -180,12 +180,3 @@ def postProcessCsv():
 
 
 
-def test():
-    data = getSerializedMiniTestData(5)
-    data = featureExtractor.performDateFeatureEngineering(data)
-
-    a = 1
-
-# test()
-
-
