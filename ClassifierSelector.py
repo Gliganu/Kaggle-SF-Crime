@@ -58,7 +58,7 @@ def trainRandomForest(xTrain, yTrain):
 def trainGradientBoostingClassifier(xTrain, yTrain):
 
     # n_estimators=80, max_depth= 7 !! These were the lowest params from test in GridSearch. Check if lower is possible!
-    classifier = GradientBoostingClassifier(n_estimators=60, max_depth= 3, verbose=1)
+    classifier = GradientBoostingClassifier(n_estimators=60,max_depth=3,min_samples_leaf=1,learning_rate=0.1,max_features=None, verbose=1)
 
     classifier.fit(xTrain, yTrain)
 

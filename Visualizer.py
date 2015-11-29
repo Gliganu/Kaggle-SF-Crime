@@ -93,7 +93,7 @@ def calculateLearningCurve():
     trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
     xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
-    trainSizes = np.linspace(1000,10000,4,dtype=int)
+    trainSizes = np.linspace(10000,200000,10,dtype=int)
 
     plot_learning_curve(classifier,xTrain,yTrain,trainSizes,cv=5)
 

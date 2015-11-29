@@ -60,8 +60,8 @@ def predictForValidation():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSize = 10000
-    miniBatchDataSize = 5000
+    trainDataSize = 25000
+    miniBatchDataSize = 10000
 
     classifier = trainClassifierOnTrainingData(trainDataSize)
 
@@ -77,15 +77,12 @@ def predictForValidation():
 
     validator.performValidation(yPred, yTest)
 
-    totalMinutes = (time.time() - allAlgorithmStartTime)/60
-    hours = totalMinutes/60
-    minutes = totalMinutes - 60*hours
 
-    print("Total run time:{} h {} s".format(hours,minutes))
+    print("Total run time:{} s".format((time.time() - allAlgorithmStartTime)))
 
 
-# if __name__ == '__main__':
-    # predictForValidation()
+if __name__ == '__main__':
+    predictForValidation()
     # predictForSubmission()
 #
 #
