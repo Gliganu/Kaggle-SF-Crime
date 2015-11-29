@@ -2,8 +2,8 @@ import time
 import numpy as np
 import DataReader as dataReader
 
-def replaceDiscreteFeaturesWithNumericalOnes(data):
-    discreteColumns = ['DayOfWeek', 'PdDistrict']
+def replaceDiscreteFeaturesWithNumericalOnes(data,discreteColumns):
+
 
     for column in discreteColumns:
 
@@ -35,28 +35,44 @@ def performDateFeatureEngineering(data):
 
     return data
 
+
+def getStreetName(fullAddress):
+    addressWords = fullAddress.split(" ")
+    return addressWords[len(addressWords)-2]
+
+def performAddressFeatureEngineering(data):
+    data['Address']=  data['Address'].map(getStreetName)
+
+    # data = data.drop(['Address'],1)
+
+    return data
+
+
 def performRegularFeatureEngineering(data, isTrainData):
     print("Performing feature engineering...")
 
 
     # trainData
     if isTrainData:
-        data = data.drop(['Descript', 'Address', 'Resolution'], 1)
+        data = data.drop(['Descript','Resolution'], 1)
 
     # testData
     else:
           # depends if out testData is actually training data
         if 'Id' in data.columns.values:
-            data = data.drop(['Address', 'Id'], 1)
+            data = data.drop(['Id'], 1)
         else:
-            data = data.drop(['Address','Descript','Resolution'], 1)
+            data = data.drop(['Descript','Resolution'], 1)
 
     # ( trainData & testData)
     data = performDateFeatureEngineering(data)
 
+    data = performAddressFeatureEngineering(data)
+
+    discreteColumns = ['Address', 'DayOfWeek', 'PdDistrict']
 
     # map using integer dictionary ( trainData & testData)
-    data = replaceDiscreteFeaturesWithNumericalOnes(data)
+    data = replaceDiscreteFeaturesWithNumericalOnes(data,discreteColumns)
 
     return data
 
