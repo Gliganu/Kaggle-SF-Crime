@@ -5,6 +5,7 @@ import DataReader as dataReader
 import RegularFeatureExtractor as regularFeatExtr
 import Validator as validator
 import Utils as utils
+import Visualizer as visualizer
 
 def predictForSubmission():
     startTime = time.time()
@@ -64,23 +65,17 @@ def predictForValidation():
 
     classifier = trainClassifierOnTrainingData(trainDataSize)
 
-
     print "Beginning to load test data..."
 
-    for index in range(1):
+    mockTrainData = dataReader.getTrainData(miniBatchDataSize)
 
-        mockTrainData = dataReader.getTrainData(miniBatchDataSize)
+    mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
 
-        mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
+    xTest,yTest = constructTestData(mockTrainData)
 
-        xTest,yTest = constructTestData(mockTrainData)
+    yPred = classifier.predict(xTest)
 
-        yPred = classifier.predict(xTest)
-
-        validator.performValidation(yPred, yTest)
-
-        # dataReader.writePredToCsv(yPred,index)
-
+    validator.performValidation(yPred, yTest)
 
     totalMinutes = (time.time() - allAlgorithmStartTime)/60
     hours = totalMinutes/60

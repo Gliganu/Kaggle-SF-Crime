@@ -81,8 +81,6 @@ def getRegularFeatures(data, isTrainData):
         data = data.drop(['Category'], 1)
         xData = data.values
 
-        # print("Train data features: {}".format(data.columns.values))
-
     #testData
     else:
         try:
@@ -93,7 +91,6 @@ def getRegularFeatures(data, isTrainData):
 
         xData = data.values
 
-        # print("Test data features: {}".format(data.columns.values))
 
     print "Features used {}".format(data.columns.values)
     return xData,yData
