@@ -10,7 +10,7 @@ def predictForSubmission():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    numberOfTrainingExamples = 100000
+    numberOfTrainingExamples = 200000
     classifier = trainClassifierOnTrainingData(numberOfTrainingExamples)
 
     print "Beginning to load test data..."
@@ -89,8 +89,8 @@ def predictForValidation():
     print("Total run time:{} h {} s".format(hours,minutes))
 
 
-if __name__ == '__main__':
-    predictForValidation()
+# if __name__ == '__main__':
+    # predictForValidation()
     # predictForSubmission()
 #
 #

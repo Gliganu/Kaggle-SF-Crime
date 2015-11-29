@@ -1,81 +1,51 @@
+import matplotlib.pyplot as plt
 import numpy as np
-from sklearn import metrics
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.learning_curve import learning_curve
 
 import DataReader as dataReader
-import RegularFeatureExtractor as regularFeatExtr
-from sklearn.grid_search import GridSearchCV
-from sklearn.svm import SVC
-import Validator as validator
-import ClassifierSelector as classifierSelector
-import MainScript as mainScript
-import Utils as utils
-from sklearn.metrics import accuracy_score,recall_score,precision_score,f1_score
-import numpy as np
+import RegularFeatureExtractor as featureExtractor
 
-import time
-import matplotlib.pyplot as plt
 
-def showTrainAndTestErrorPlot(yTrainValues,yTestValues,trainDataSize):
+def plot_learning_curve(estimator, X, y,train_sizes, cv=5):
 
-    plt.plot(trainDataSize, yTrainValues,'o-' )
-    plt.plot(trainDataSize, yTestValues,'x-')
+    n_jobs = -1
 
-    plt.xlabel('Number of training examples')
-    plt.ylabel('Error')
+    plt.figure()
 
-    plt.legend(['Train Error', 'Test Error'], loc='upper left')
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    train_sizes, train_scores, test_scores = learning_curve(
+        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes,verbose=1)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+
     plt.show()
 
 
-def testDataOverTime():
-    startTime = time.time()
-    allAlgorithmStartTime = startTime
+def calculateLearningCurve():
+    classifier = GradientBoostingClassifier(n_estimators=60, max_depth= 3, verbose=1)
+    trainData = dataReader.getTrainData()
 
-    # trainDataSize = 100000
-    testDataSize = 3000
+    # feature engineering
+    trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
+    xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
+    trainSizes = np.linspace(1000,10000,4,dtype=int)
 
-    yTestValues = []
-    yTrainValues = []
-
-    trainDataSizes = np.linspace(100000,200000,4,dtype=int)
-
-    for trainDataSize in trainDataSizes:
-
-        print("Currently at {}".format(trainDataSize))
-
-        classifier,xTrain,yTrain = utils.trainClassifierOnTrainingDataReturnAll(trainDataSize)
-
-        # Cut the data on which the predicition will be made to be the same lenght as test
-        xTrain = xTrain[0:testDataSize]
-        yTrain = yTrain[0:testDataSize]
-
-        mockTrainData = dataReader.getTrainData(testDataSize)
-
-        mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
-
-        xTest,yTest = mainScript.constructTestData(mockTrainData)
-
-        print("Predicting...")
-        yTestPred = classifier.predict(xTest)
-        yTrainPred = classifier.predict(xTrain)
-
-        yTestAccuracy =  accuracy_score(yTestPred,yTest)
-        yTrainAccuracy = accuracy_score(yTrainPred,yTrain)
-
-        yTestValues.append(yTestAccuracy)
-        yTrainValues.append(yTrainAccuracy)
-
-
-    showTrainAndTestErrorPlot(yTestValues, yTrainValues,trainDataSizes)
-
-
-    print("Total run time:{}".format(time.time() - allAlgorithmStartTime))
-#
-
-# if __name__ == '__main__':
-#     testDataOverTime()
-#
-
+    plot_learning_curve(classifier,xTrain,yTrain,trainSizes,cv=5)
