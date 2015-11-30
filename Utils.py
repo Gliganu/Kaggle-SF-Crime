@@ -76,3 +76,13 @@ def createEnsembleResult():
 
 
 
+class InitialClassifierAdapter(object):
+    def __init__(self, est):
+        self.est = est
+
+    def fit(self, X, y, sample_weight=None):
+        self.est.fit(X, y)
+        return self
+
+    def predict(self, X):
+        return self.est.predict_proba(X)[:, 1][:, np.newaxis]

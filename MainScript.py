@@ -6,12 +6,15 @@ import RegularFeatureExtractor as regularFeatExtr
 import Validator as validator
 import Utils as utils
 import Visualizer as visualizer
+from sklearn.cross_validation import cross_val_score
+from sklearn.cross_validation import StratifiedKFold
+
 
 def predictForSubmission():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    numberOfTrainingExamples = 200000
+    numberOfTrainingExamples = -1
     classifier = trainClassifierOnTrainingData(numberOfTrainingExamples)
 
     print "Beginning to load test data..."
@@ -56,29 +59,35 @@ def constructTestData(testData):
 
     return xTest,yTest
 
+
+def constructTrainingData(trainDataSize):
+
+    #training data
+    trainData = dataReader.getTrainData(trainDataSize)
+    trainData = trainData.append(dataReader.getSuffixDataFrame())
+
+    # feature engineering
+    trainData =  regularFeatExtr.convertTargetFeatureToNumeric(trainData)
+    xTrain, yTrain = regularFeatExtr.getRegularFeatures(trainData, True)
+
+
+    return xTrain,yTrain
+
 def predictForValidation():
-    startTime = time.time()
-    allAlgorithmStartTime = startTime
+    # train 28k and test = 7k
+    trainDataSize = 35000
 
-    trainDataSize = 25000
-    miniBatchDataSize = 10000
+    classifier = classifierSelector.constructGradientBoostingClassifier()
 
-    classifier = trainClassifierOnTrainingData(trainDataSize)
+    xTrain,yTrain = constructTrainingData(trainDataSize)
 
-    print "Beginning to load test data..."
+    cv = StratifiedKFold(yTrain,n_folds=5)
 
-    mockTrainData = dataReader.getTrainData(miniBatchDataSize)
+    cv_scores = cross_val_score(classifier, xTrain, yTrain, cv=cv, n_jobs=-1,scoring="f1_weighted",verbose=1)
 
-    mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
+    scoreMean = cv_scores.mean()
 
-    xTest,yTest = constructTestData(mockTrainData)
-
-    yPred = classifier.predict(xTest)
-
-    validator.performValidation(yPred, yTest)
-
-
-    print("Total run time:{} s".format((time.time() - allAlgorithmStartTime)))
+    print "Mean score is {}".format(scoreMean)
 
 
 if __name__ == '__main__':

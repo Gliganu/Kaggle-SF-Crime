@@ -55,10 +55,18 @@ def trainRandomForest(xTrain, yTrain):
 
     return classifier
 
-def trainGradientBoostingClassifier(xTrain, yTrain):
+
+def constructGradientBoostingClassifier():
 
     # n_estimators=100, learning_rate= 0.05
-    classifier = GradientBoostingClassifier(n_estimators=100,max_depth=3,min_samples_leaf=1,learning_rate=0.05,max_features=None, verbose=1)
+    # max_features= 0.3, max_depth= 4
+     classifier = GradientBoostingClassifier(n_estimators=100,max_depth=4,min_samples_leaf=1,learning_rate=0.05,max_features=0.3, verbose=1)
+
+     return classifier
+
+def trainGradientBoostingClassifier(xTrain, yTrain):
+
+    classifier = constructGradientBoostingClassifier()
 
     classifier.fit(xTrain, yTrain)
 

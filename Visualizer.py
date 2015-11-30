@@ -7,7 +7,7 @@ from sklearn.learning_curve import validation_curve
 
 import DataReader as dataReader
 import RegularFeatureExtractor as featureExtractor
-
+import ClassifierSelector as classifierSelector
 
 def plot_learning_curve(estimator, X, y,train_sizes, cv=5):
 
@@ -86,16 +86,16 @@ def calculateValidationCurve():
 
 
 def calculateLearningCurve():
-    classifier = GradientBoostingClassifier(n_estimators=60, max_depth= 3, verbose=1)
+    classifier = classifierSelector.constructGradientBoostingClassifier()
     trainData = dataReader.getTrainData()
 
     # feature engineering
     trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
     xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
-    trainSizes = np.linspace(10000,200000,10,dtype=int)
+    trainSizes = np.linspace(10000,200000,5,dtype=int)
 
-    plot_learning_curve(classifier,xTrain,yTrain,trainSizes,cv=5)
+    plot_learning_curve(classifier,xTrain,yTrain,trainSizes,cv=3)
 
 
 def plotFeatureImportance(classifier):
