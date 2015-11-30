@@ -1,6 +1,8 @@
 import time
 import numpy as np
 import DataReader as dataReader
+import datetime
+import pandas as pd
 
 def replaceDiscreteFeaturesWithNumericalOnes(data,discreteColumns):
 
@@ -47,6 +49,14 @@ def performAddressFeatureEngineering(data):
 
     return data
 
+def addTimeFeature(data):
+
+    data['Time'] = data['Dates']
+    data['Time'] =   pd.to_datetime(data.Time).map(lambda entry: (entry-datetime.datetime(1970,1,1)).total_seconds())
+
+    return data
+
+# TODO FIX THIS so that isTrainData is no longer needed
 
 def performRegularFeatureEngineering(data, isTrainData):
     print("Performing feature engineering...")
@@ -64,9 +74,10 @@ def performRegularFeatureEngineering(data, isTrainData):
         else:
             data = data.drop(['Descript','Resolution'], 1)
 
-    # ( trainData & testData)
-    data = performDateFeatureEngineering(data)
 
+    # ( trainData & testData)
+    data = addTimeFeature(data)
+    data = performDateFeatureEngineering(data)
     data = performAddressFeatureEngineering(data)
 
     discreteColumns = ['Address', 'DayOfWeek', 'PdDistrict']

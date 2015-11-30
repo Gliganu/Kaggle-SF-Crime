@@ -38,9 +38,9 @@ def predictForSubmission():
 
 
 
-def trainClassifierOnTrainingData(numberOfTrainingExamples = -1):
+def trainClassifierOnTrainingData(numberOfTrainingExamples = -1, margins=None):
 
-    trainData = dataReader.getTrainData(numberOfTrainingExamples)
+    trainData = dataReader.getTrainData(numberOfTrainingExamples,margins)
 
     # feature engineering
     trainData =  regularFeatExtr.convertTargetFeatureToNumeric(trainData)

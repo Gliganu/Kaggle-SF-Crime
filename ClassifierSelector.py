@@ -10,6 +10,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import SGDClassifier
 from sklearn.svm import LinearSVC
 import numpy as np
+from sklearn.cross_validation import StratifiedKFold
 
 def trainSVC(xTrain,yTrain,probability):
     classifier = SVC(probability=probability, kernel='linear', cache_size=5000)
@@ -74,7 +75,9 @@ def trainGradientBoostingClassifier(xTrain, yTrain):
 
 def trainUsingGridSearch(classifier, paramGrid, xTrain, yTrain):
 
-    classifier = GridSearchCV(classifier, param_grid=paramGrid, cv=3, n_jobs=-1, verbose=1)
+    cv = StratifiedKFold(3,yTrain)
+
+    classifier = GridSearchCV(classifier, param_grid=paramGrid, cv=cv, n_jobs=-1, verbose=1)
 
     classifier.fit(xTrain, yTrain)
 

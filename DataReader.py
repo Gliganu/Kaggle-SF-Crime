@@ -79,7 +79,7 @@ def getCategoryDictionaries():
     return categToIndexDictionary
 
 
-def writePredToCsv(yPred,miniTestDataIndex):
+def writePredToCsv(yPred,miniTestDataIndex,outputFileName=None):
     print("Writing to csv...")
 
     categToIndexDictionary = getCategoryDictionaries()
@@ -94,7 +94,10 @@ def writePredToCsv(yPred,miniTestDataIndex):
 
     data = pd.DataFrame(resultMatrix, range(numberOfEntries), columns=categToIndexDictionary.keys())
 
-    outputFileName = 'data\\out.csv'
+    if outputFileName is None:
+        outputFileName = 'data\\out.csv'
+
+
     if miniTestDataIndex == 0:
 
         if os.path.isfile(outputFileName):
@@ -141,14 +144,20 @@ def getSerializedTestData():
 
 
 
-def getTrainData(trainDataSize = -1):
+def getTrainData(trainDataSize = -1, (bottomMargin,topMargin)=None):
 
     print("Getting training data: "+str(trainDataSize))
 
     trainData = getSerializedTrainingData()
 
-    if trainDataSize != -1:
-        trainData = trainData.sample(trainDataSize)
+    if (bottomMargin,topMargin) is not None:
+        print("Using margins: "+str((bottomMargin,topMargin)))
+        trainData = trainData.ix[bottomMargin:topMargin]
+
+    else:
+        if trainDataSize != -1:
+            trainData = trainData.sample(trainDataSize)
+
 
     print "TrainData size is: {}".format(trainData.shape)
 
@@ -169,9 +178,11 @@ def getTestData(testDataSize = -1, withLabels = True):
     return testData
 
 
-def postProcessCsv():
+def postProcessCsv(outputFileName=None):
     # this is needed to add remove old mini-batch-id and add global id
-    outputFileName = "data\\out.csv"
+
+    if outputFileName is None:
+        outputFileName = "data\\out.csv"
 
     data = pd.read_csv(outputFileName, quotechar='"', skipinitialspace=True)
     data = data.drop(data.columns[0],1)

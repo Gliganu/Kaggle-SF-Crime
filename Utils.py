@@ -34,45 +34,10 @@ def trainClassifierOnTrainingDataReturnAll(numberOfTrainingExamples = -1):
     return classifier, xTrain, yTrain
 
 
-def getDataFrameValues(inputFileName):
-    return pd.read_csv(inputFileName, quotechar='"', skipinitialspace=True)
-
 # def multiplyValues(df1,df2):
 #     return df1.values + df2.values
 
 
-def createEnsembleResult():
-    fileRegex = "data\\submissions\\*.csv"
-    submissionPaths = glob.glob(fileRegex)
-
-    numberOfSubmission = len(submissionPaths)
-
-    targetColumns =  "Id,KIDNAPPING,WEAPON LAWS,SECONDARY CODES,WARRANTS,LOITERING,EMBEZZLEMENT,SUICIDE,DRIVING UNDER THE INFLUENCE,VEHICLE THEFT,ROBBERY,BURGLARY,STOLEN PROPERTY,PORNOGRAPHY/OBSCENE MAT,SUSPICIOUS OCC,ARSON,BRIBERY,FORGERY/COUNTERFEITING,BAD CHECKS,DRUNKENNESS,GAMBLING,OTHER OFFENSES,RECOVERED VEHICLE,FRAUD,FAMILY OFFENSES,DRUG/NARCOTIC,SEX OFFENSES NON FORCIBLE,LARCENY/THEFT,VANDALISM,MISSING PERSON,LIQUOR LAWS,TRESPASS,TREA,SEX OFFENSES FORCIBLE,EXTORTION,ASSAULT,RUNAWAY,NON-CRIMINAL,DISORDERLY CONDUCT,PROSTITUTION"
-    targetColumns = targetColumns.split(",")
-
-
-    print "Creating dataframes..."
-    dataFramesValues = [getDataFrameValues(submissionPath) for submissionPath in submissionPaths]
-
-    print "Multiplying dataframes..."
-    # add all the results together
-    multipliedDataFrame = pd.DataFrame(reduce(lambda df1, df2: df1+df2, dataFramesValues))
-    # multipliedDataFrame = pd.DataFrame(reduce(multiplyValues, dataFrames))
-
-    # divide by the number of submissions
-    ensembleDataFrame = pd.DataFrame(multipliedDataFrame.values/numberOfSubmission, columns=targetColumns)
-
-    ensembleDataFrame=ensembleDataFrame.drop(['Id'],1)
-
-    print "Outputting..."
-    outputFileName = "data\\ensemble\\ensemble.csv"
-
-    if os.path.isfile(outputFileName):
-        os.remove(outputFileName)
-
-    ensembleDataFrame.to_csv(outputFileName,index_label="Id")
-
-    return ensembleDataFrame
 
 
 

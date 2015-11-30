@@ -18,7 +18,7 @@ def plot_learning_curve(estimator, X, y,train_sizes, cv=5):
     plt.xlabel("Training examples")
     plt.ylabel("Score")
     train_sizes, train_scores, test_scores = learning_curve(
-        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes,verbose=1)
+        estimator, X, y,scoring="f1_weighted", cv=cv, n_jobs=n_jobs, train_sizes=train_sizes,verbose=1)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
@@ -43,7 +43,7 @@ def plot_validation_curve(classifier,xTrain,yTrain,paramName,paramRange):
 
     train_scores, test_scores = validation_curve(
         classifier, xTrain, yTrain, param_name=paramName, param_range=paramRange,
-        cv=5, scoring="accuracy", n_jobs=-1,verbose=1)
+        cv=3, scoring="f1_weighted", n_jobs=-1,verbose=1)
 
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
