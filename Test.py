@@ -3,8 +3,16 @@ import os
 import Visualizer as visualizer
 import EnsembleWorker as worker
 import DataReader as dataReader
+import MainScript as mainScript
 
 if __name__ == '__main__':
     # visualizer.calculateLearningCurve()
-    worker.createEnsembleBasedODifferentTrainingSets()
-    # data = dataReader.getTrainData(-1,(3,5))
+    visualizer.calculateValidationCurve()
+
+    # worker.createEnsembleBasedODifferentTrainingSets()
+    # worker.createEnsembleBasedODifferentTrainingSets()
+
+    # mainScript.testGeneralPerformanceUsingCrossValidationScore()
+    # mainScript.testParameterPerformance()
+    # mainScript.predictForSubmission()
+

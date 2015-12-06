@@ -58,6 +58,14 @@ def addTimeFeature(data):
 
 # TODO FIX THIS so that isTrainData is no longer needed
 
+def performPdDistrictOHEFeatureEngineering(data):
+    data = pd.concat([data,pd.get_dummies(data['PdDistrict'], prefix='Police_District')], axis=1)
+    data = pd.concat([data,pd.get_dummies(data['DayOfWeek'], prefix='Day')], axis=1)
+    data = data.drop(['PdDistrict','DayOfWeek'],1)
+
+    return data
+
+
 def performRegularFeatureEngineering(data, isTrainData):
     print("Performing feature engineering...")
 
@@ -79,7 +87,9 @@ def performRegularFeatureEngineering(data, isTrainData):
     data = addTimeFeature(data)
     data = performDateFeatureEngineering(data)
     data = performAddressFeatureEngineering(data)
+    # data = performPdDistrictOHEFeatureEngineering(data)
 
+    # discreteColumns = ['Address']
     discreteColumns = ['Address', 'DayOfWeek', 'PdDistrict']
 
     # map using integer dictionary ( trainData & testData)

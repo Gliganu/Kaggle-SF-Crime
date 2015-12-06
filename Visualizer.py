@@ -8,10 +8,14 @@ from sklearn.learning_curve import validation_curve
 import DataReader as dataReader
 import RegularFeatureExtractor as featureExtractor
 import ClassifierSelector as classifierSelector
+from sklearn import cross_validation
 
-def plot_learning_curve(estimator, X, y,train_sizes, cv=5):
+def plot_learning_curve(estimator, X, y,train_sizes):
 
     n_jobs = -1
+
+    # cv=3
+    # cv = cross_validation.ShuffleSplit(len(X), n_iter=1, test_size=0.1)
 
     plt.figure()
 
@@ -69,8 +73,7 @@ def plot_validation_curve(classifier,xTrain,yTrain,paramName,paramRange):
 
 
 def calculateValidationCurve():
-    classifier = GradientBoostingClassifier(n_estimators=60, max_depth= 3, verbose=1)
-
+    classifier = classifierSelector.constructGradientBoostingClassifier()
 
     numberOfTrainData = 50000
 
@@ -80,9 +83,9 @@ def calculateValidationCurve():
     trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
     xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
-    paramRange = [0.1,0.3,1]
+    paramRange = [0.1,0.13,0.16]
 
-    plot_validation_curve(classifier,xTrain,yTrain,"max_features",paramRange)
+    plot_validation_curve(classifier,xTrain,yTrain,"learning_rate",paramRange)
 
 
 def calculateLearningCurve():
@@ -93,9 +96,9 @@ def calculateLearningCurve():
     trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
     xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
-    trainSizes = np.linspace(10000,200000,5,dtype=int)
+    trainSizes =  np.linspace(100000,200000,2,dtype=int)
 
-    plot_learning_curve(classifier,xTrain,yTrain,trainSizes,cv=3)
+    plot_learning_curve(classifier,xTrain,yTrain,trainSizes)
 
 
 def plotFeatureImportance(classifier):

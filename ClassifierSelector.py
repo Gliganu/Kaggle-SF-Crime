@@ -50,34 +50,50 @@ def trainSGDClassifier(xTrain, yTrain):
 def trainRandomForest(xTrain, yTrain):
 
     # 10000/3000 =>  {'n_estimators': 90 'max_features': 0.8, 'max_depth': 9}
-    classifier = RandomForestClassifier(n_estimators=90,max_features=0.8, max_depth=9, n_jobs=-1)
-
+    classifier = constructRandomForestClassifier()
     classifier.fit(xTrain, yTrain)
+
+    return classifier
+
+
+
+def constructRandomForestClassifier():
+
+    # 10000/3000 =>  {'n_estimators': 90 'max_features': 0.8, 'max_depth': 9}
+    classifier = RandomForestClassifier(n_estimators=90,max_features=0.8, max_depth=9, n_jobs=-1)
 
     return classifier
 
 
 def constructGradientBoostingClassifier():
 
-    # n_estimators=100, learning_rate= 0.05
-    # max_features= 0.3, max_depth= 4
-     classifier = GradientBoostingClassifier(n_estimators=100,max_depth=4,min_samples_leaf=1,learning_rate=0.05,max_features=0.3, verbose=1)
+    # n_estimators = 120, learning_rate = 0.07
+    # max_features= 0.5, max_depth= 6
+    # subsample = 0.9
+    classifier = GradientBoostingClassifier(n_estimators=120,max_depth=6,min_samples_leaf=1,learning_rate=0.07,max_features=0.5, verbose=1)
+    # classifier = GradientBoostingClassifier(verbose=1)
 
-     return classifier
+
+    return classifier
 
 def trainGradientBoostingClassifier(xTrain, yTrain):
 
     classifier = constructGradientBoostingClassifier()
 
-    classifier.fit(xTrain, yTrain)
+    paramGrid = {
+        "learning_rate":[0.1,0.13,0.16],
+    }
+
+    classifier = trainUsingGridSearch(classifier,paramGrid,xTrain,yTrain)
+    # classifier.fit(xTrain, yTrain)
 
     return classifier
 
 def trainUsingGridSearch(classifier, paramGrid, xTrain, yTrain):
 
-    cv = StratifiedKFold(3,yTrain)
+    cv = StratifiedKFold(yTrain,n_folds=3)
 
-    classifier = GridSearchCV(classifier, param_grid=paramGrid, cv=cv, n_jobs=-1, verbose=1)
+    classifier = GridSearchCV(classifier, scoring="f1_weighted", param_grid=paramGrid, cv=cv, n_jobs=-1, verbose=1)
 
     classifier.fit(xTrain, yTrain)
 

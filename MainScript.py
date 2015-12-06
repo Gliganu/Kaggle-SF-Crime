@@ -7,8 +7,9 @@ import Validator as validator
 import Utils as utils
 import Visualizer as visualizer
 from sklearn.cross_validation import cross_val_score
-from sklearn.cross_validation import StratifiedKFold
-
+from sklearn.cross_validation import *
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 def predictForSubmission():
     startTime = time.time()
@@ -73,28 +74,50 @@ def constructTrainingData(trainDataSize):
 
     return xTrain,yTrain
 
-def predictForValidation():
+def testGeneralPerformanceUsingCrossValidationScore():
     # train 28k and test = 7k
-    trainDataSize = 35000
+    # trainDataSize = 35000
+    trainDataSize = 150000
 
     classifier = classifierSelector.constructGradientBoostingClassifier()
+    # classifier = classifierSelector.constructRandomForestClassifier()
+    # classifier = SVC(verbose=1)
 
     xTrain,yTrain = constructTrainingData(trainDataSize)
 
-    cv = StratifiedKFold(yTrain,n_folds=5)
+    # cv = StratifiedKFold(yTrain,n_folds=3)
+    cv = StratifiedShuffleSplit(yTrain,n_iter=2,train_size=50000,test_size=100000)
 
-    cv_scores = cross_val_score(classifier, xTrain, yTrain, cv=cv, n_jobs=-1,scoring="f1_weighted",verbose=1)
+    cv_scores = cross_val_score(classifier, xTrain, yTrain, cv=cv, n_jobs=-1,scoring="log_loss",verbose=1)
 
     scoreMean = cv_scores.mean()
 
     print "Mean score is {}".format(scoreMean)
 
 
-if __name__ == '__main__':
-    predictForValidation()
-    # predictForSubmission()
-#
-#
+def testParameterPerformance():
+    startTime = time.time()
+    allAlgorithmStartTime = startTime
+
+    trainDataSize = 50000
+    miniBatchDataSize = 100000
+
+    classifier = trainClassifierOnTrainingData(trainDataSize)
+
+    print "Beginning to load test data..."
+
+    mockTrainData = dataReader.getTrainData(miniBatchDataSize)
+    mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
+
+    xTest,yTest = constructTestData(mockTrainData)
+
+    yPred = classifier.predict(xTest)
+
+    validator.performValidation(yPred, yTest)
+
+
+    print("Total run time:{} s".format((time.time() - allAlgorithmStartTime)))
+
 
 
 

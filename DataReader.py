@@ -144,13 +144,15 @@ def getSerializedTestData():
 
 
 
-def getTrainData(trainDataSize = -1, (bottomMargin,topMargin)=None):
+def getTrainData(trainDataSize = -1, margins=None):
 
     print("Getting training data: "+str(trainDataSize))
 
     trainData = getSerializedTrainingData()
 
-    if (bottomMargin,topMargin) is not None:
+    if margins is not None:
+        bottomMargin = margins[0]
+        topMargin = margins[1]
         print("Using margins: "+str((bottomMargin,topMargin)))
         trainData = trainData.ix[bottomMargin:topMargin]
 
