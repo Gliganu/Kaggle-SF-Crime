@@ -39,9 +39,10 @@ def predictForSubmission():
 
 
 
-def trainClassifierOnTrainingData(numberOfTrainingExamples = -1, margins=None):
+def trainClassifierOnTrainingData(trainData=None, numberOfTrainingExamples = -1, margins=None):
 
-    trainData = dataReader.getTrainData(numberOfTrainingExamples,margins)
+    if trainData is None:
+        trainData = dataReader.getTrainData(numberOfTrainingExamples,margins)
 
     # feature engineering
     trainData =  regularFeatExtr.convertTargetFeatureToNumeric(trainData)
@@ -85,8 +86,7 @@ def testGeneralPerformanceUsingCrossValidationScore():
 
     xTrain,yTrain = constructTrainingData(trainDataSize)
 
-    # cv = StratifiedKFold(yTrain,n_folds=3)
-    cv = StratifiedShuffleSplit(yTrain,n_iter=2,train_size=50000,test_size=100000)
+    cv = StratifiedShuffleSplit(yTrain,n_iter=1,train_size=50000,test_size=100000)
 
     cv_scores = cross_val_score(classifier, xTrain, yTrain, cv=cv, n_jobs=-1,scoring="log_loss",verbose=1)
 
@@ -99,17 +99,18 @@ def testParameterPerformance():
     startTime = time.time()
     allAlgorithmStartTime = startTime
 
-    trainDataSize = 50000
-    miniBatchDataSize = 100000
+    # define sizes
+    trainDataSize = 10000
+    testDataSize = 100000
 
-    classifier = trainClassifierOnTrainingData(trainDataSize)
+    trainData,testData = utils.getDifferentTrainAndTestData(trainDataSize,testDataSize)
 
-    print "Beginning to load test data..."
+    #in order to assure that we have members form each class present
+    testData = testData.append(dataReader.getSuffixDataFrame())
 
-    mockTrainData = dataReader.getTrainData(miniBatchDataSize)
-    mockTrainData = mockTrainData.append(dataReader.getSuffixDataFrame())
+    classifier = trainClassifierOnTrainingData(trainData=trainData)
 
-    xTest,yTest = constructTestData(mockTrainData)
+    xTest,yTest = constructTestData(testData)
 
     yPred = classifier.predict(xTest)
 
@@ -117,7 +118,6 @@ def testParameterPerformance():
 
 
     print("Total run time:{} s".format((time.time() - allAlgorithmStartTime)))
-
 
 
 

@@ -84,7 +84,7 @@ def performRegularFeatureEngineering(data, isTrainData):
 
 
     # ( trainData & testData)
-    data = addTimeFeature(data)
+    # data = addTimeFeature(data)
     data = performDateFeatureEngineering(data)
     data = performAddressFeatureEngineering(data)
     # data = performPdDistrictOHEFeatureEngineering(data)
@@ -110,22 +110,16 @@ def getRegularFeatures(data, isTrainData):
     data = performRegularFeatureEngineering(data, isTrainData)
 
     # splitting data into X and Y
-    # trainData
-    if isTrainData:
+    if 'Category' in data.columns.values:
         yData =  data.Category
         data = data.drop(['Category'], 1)
-        xData = data.values
-
-    #testData
     else:
-        try:
-            yData = data.Category
-            data = data.drop(['Category'], 1)
-        except AttributeError:
-            yData = []
+        yData = []
 
-        xData = data.values
+    xData = data.values
 
+
+    dataReader.serializeObject(data.columns.values,"data\\misc\\columns.csv")
 
     print "Features used {}".format(data.columns.values)
     return xData,yData

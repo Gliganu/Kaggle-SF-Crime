@@ -4,15 +4,17 @@ import Visualizer as visualizer
 import EnsembleWorker as worker
 import DataReader as dataReader
 import MainScript as mainScript
+import time as time
 
 if __name__ == '__main__':
     # visualizer.calculateLearningCurve()
-    visualizer.calculateValidationCurve()
+    # visualizer.calculateValidationCurve()
 
     # worker.createEnsembleBasedODifferentTrainingSets()
     # worker.createEnsembleBasedODifferentTrainingSets()
 
     # mainScript.testGeneralPerformanceUsingCrossValidationScore()
-    # mainScript.testParameterPerformance()
+    mainScript.testParameterPerformance()
+
     # mainScript.predictForSubmission()
 

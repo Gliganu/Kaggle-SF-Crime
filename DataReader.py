@@ -109,46 +109,23 @@ def writePredToCsv(yPred,miniTestDataIndex,outputFileName=None):
             data.to_csv(f, header=False)
 
 
-def constructSerializedTrainingDataFrame():
-    print("Reading......")
-    dataTrain = getWholeTrainingData()
 
-    print("Outputting.....")
-    outputFileName = "data\\frames\\trainingDataFrame.pkl"
-    joblib.dump(dataTrain, outputFileName)
+def serializeObject(targetObj,outputFilePath):
 
+     if os.path.isfile(outputFilePath):
+            os.remove(outputFilePath)
 
-def constructSerializedTestDataFrame():
-    print("Reading......")
-    dataTest = getWholeTestData()
+     joblib.dump(targetObj, outputFilePath)
 
-    print("Outputting.....")
-    outputFileName = "data\\frames\\testDataFrame.pkl"
-    joblib.dump(dataTest, outputFileName)
-
-
-def getSerializedTrainingData():
-    inputFileName = "data\\frames\\trainingDataFrame.pkl"
-    dataRead = joblib.load(inputFileName)
-
-    return dataRead
-
-
-def getSerializedTestData():
-    print("Getting test data...")
-
-    inputFileName = "data\\frames\\testDataFrame.pkl"
-    dataRead = joblib.load(inputFileName)
-
-    return dataRead
-
+def deserializeObject(inputFilePath):
+    return joblib.load(inputFilePath)
 
 
 def getTrainData(trainDataSize = -1, margins=None):
 
     print("Getting training data: "+str(trainDataSize))
 
-    trainData = getSerializedTrainingData()
+    trainData = getWholeTrainingData()
 
     if margins is not None:
         bottomMargin = margins[0]
@@ -168,9 +145,9 @@ def getTrainData(trainDataSize = -1, margins=None):
 def getTestData(testDataSize = -1, withLabels = True):
 
     if withLabels:
-        testData = getSerializedTrainingData()
+        testData = getWholeTrainingData()
     else:
-        testData = getSerializedTestData()
+        testData = getWholeTestData()
 
     if testDataSize != -1:
         testData = testData.sample(testDataSize)

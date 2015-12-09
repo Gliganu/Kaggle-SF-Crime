@@ -6,6 +6,7 @@ import ClassifierSelector as classifierSelector
 import glob as glob
 import pandas as pd
 import os as os
+import random as random
 
 numberOfPartitions = 80
 
@@ -34,9 +35,25 @@ def trainClassifierOnTrainingDataReturnAll(numberOfTrainingExamples = -1):
     return classifier, xTrain, yTrain
 
 
-# def multiplyValues(df1,df2):
-#     return df1.values + df2.values
 
+def getDifferentTrainAndTestData(trainDataSize, testDataSize):
+
+    data = dataReader.getWholeTrainingData()
+
+    if trainDataSize+testDataSize > data.shape[0]: # request more rows than the DF has
+        print "Getting different train & test data with possible duplicates"
+        trainData = data.sample(trainDataSize)
+        testData = data.sample(testDataSize)
+    else:
+        print "Getting totally different train & test data"
+        indexes = np.arange(data.shape[0]) #0->873k
+        random.shuffle(indexes) # works in-place
+
+        trainData = data.ix[indexes[0:trainDataSize]]
+        testData = data.ix[indexes[trainDataSize+1:trainDataSize+1+testDataSize]]
+
+
+    return trainData,testData
 
 
 
@@ -51,3 +68,4 @@ class InitialClassifierAdapter(object):
 
     def predict(self, X):
         return self.est.predict_proba(X)[:, 1][:, np.newaxis]
+

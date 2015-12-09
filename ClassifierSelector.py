@@ -29,7 +29,7 @@ def trainKNeighbors(xTrain, yTrain):
     return classifier
 
 def trainLogisticRegression(xTrain, yTrain):
-    classifier = LogisticRegression()
+    classifier = LogisticRegression(n_jobs=-1, verbose=1)
 
     classifier.fit(xTrain, yTrain)
 
@@ -70,8 +70,8 @@ def constructGradientBoostingClassifier():
     # n_estimators = 120, learning_rate = 0.07
     # max_features= 0.5, max_depth= 6
     # subsample = 0.9
-    classifier = GradientBoostingClassifier(n_estimators=120,max_depth=6,min_samples_leaf=1,learning_rate=0.07,max_features=0.5, verbose=1)
-    # classifier = GradientBoostingClassifier(verbose=1)
+    # classifier = GradientBoostingClassifier(n_estimators=120,max_depth=6,min_samples_leaf=1,learning_rate=0.07,max_features=0.5, verbose=1)
+    classifier = GradientBoostingClassifier(verbose=1)
 
 
     return classifier
@@ -80,12 +80,12 @@ def trainGradientBoostingClassifier(xTrain, yTrain):
 
     classifier = constructGradientBoostingClassifier()
 
-    paramGrid = {
-        "learning_rate":[0.1,0.13,0.16],
-    }
-
-    classifier = trainUsingGridSearch(classifier,paramGrid,xTrain,yTrain)
-    # classifier.fit(xTrain, yTrain)
+    # paramGrid = {
+    #     "learning_rate":[0.1,0.13,0.16],
+    # }
+    #
+    # classifier = trainUsingGridSearch(classifier,paramGrid,xTrain,yTrain)
+    classifier.fit(xTrain, yTrain)
 
     return classifier
 
@@ -93,7 +93,7 @@ def trainUsingGridSearch(classifier, paramGrid, xTrain, yTrain):
 
     cv = StratifiedKFold(yTrain,n_folds=3)
 
-    classifier = GridSearchCV(classifier, scoring="f1_weighted", param_grid=paramGrid, cv=cv, n_jobs=-1, verbose=1)
+    classifier = GridSearchCV(classifier, scoring="log_loss", param_grid=paramGrid, cv=cv, n_jobs=-1, verbose=1)
 
     classifier.fit(xTrain, yTrain)
 
@@ -109,8 +109,8 @@ def trainClassifier(xTrain,yTrain):
     # classifier = trainSGDClassifier(xTrain, yTrain)
     # classifier  = trainSVC(xTrain,yTrain,False)
     # classifier = trainRandomForest(xTrain,yTrain)
-    classifier = trainGradientBoostingClassifier(xTrain,yTrain)
-    # classifier = trainLogisticRegression(xTrain,yTrain)
+    # classifier = trainGradientBoostingClassifier(xTrain,yTrain)
+    classifier = trainLogisticRegression(xTrain,yTrain)
     # classifier = trainGradientBoostingClassifier(xTrain,yTrain)
 
 

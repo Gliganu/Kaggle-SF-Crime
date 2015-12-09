@@ -15,14 +15,14 @@ def plot_learning_curve(estimator, X, y,train_sizes):
     n_jobs = -1
 
     # cv=3
-    # cv = cross_validation.ShuffleSplit(len(X), n_iter=1, test_size=0.1)
+    cv = cross_validation.ShuffleSplit(len(X), n_iter=1, test_size=0.3)
 
     plt.figure()
 
     plt.xlabel("Training examples")
     plt.ylabel("Score")
     train_sizes, train_scores, test_scores = learning_curve(
-        estimator, X, y,scoring="f1_weighted", cv=cv, n_jobs=n_jobs, train_sizes=train_sizes,verbose=1)
+        estimator, X, y,scoring="log_loss", cv=cv, n_jobs=n_jobs, train_sizes=train_sizes,verbose=1)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
@@ -47,7 +47,7 @@ def plot_validation_curve(classifier,xTrain,yTrain,paramName,paramRange):
 
     train_scores, test_scores = validation_curve(
         classifier, xTrain, yTrain, param_name=paramName, param_range=paramRange,
-        cv=3, scoring="f1_weighted", n_jobs=-1,verbose=1)
+        cv=3, scoring="log_loss", n_jobs=-1,verbose=1)
 
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
@@ -96,14 +96,23 @@ def calculateLearningCurve():
     trainData =  featureExtractor.convertTargetFeatureToNumeric(trainData)
     xTrain, yTrain = featureExtractor.getRegularFeatures(trainData, True)
 
-    trainSizes =  np.linspace(100000,200000,2,dtype=int)
+    trainSizes =  np.linspace(100000,500000,5,dtype=int)
 
     plot_learning_curve(classifier,xTrain,yTrain,trainSizes)
 
 
 def plotFeatureImportance(classifier):
 
-    fx_imp = pd.Series(classifier.feature_importances_)
-    fx_imp /= fx_imp.max()  # normalize
-    fx_imp.sort()
-    fx_imp.plot(kind='barh',figsize=(11,7))
+    featureNames = dataReader.deserializeObject("data\\misc\\columns.csv")
+
+    feature_importance = classifier.feature_importances_
+    # make importances relative to max importance
+    feature_importance = 100.0 * (feature_importance / feature_importance.max())
+    sorted_idx = np.argsort(feature_importance)
+    pos = np.arange(sorted_idx.shape[0]) + .5
+    plt.subplot(1, 2, 2)
+    plt.barh(pos, feature_importance[sorted_idx], align='center')
+    plt.yticks(pos,featureNames[sorted_idx])
+    plt.xlabel('Relative Importance')
+    plt.title('Variable Importance')
+    plt.show()
